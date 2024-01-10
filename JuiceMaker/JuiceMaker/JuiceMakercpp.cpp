@@ -1,7 +1,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <list>
-ups
+using namespace std;
 class Cake
 {
 public:
