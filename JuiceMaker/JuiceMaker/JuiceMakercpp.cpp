@@ -1,7 +1,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <list>
-sasa pidar1
+using namespace std;
 class Cake
 {
 public:
