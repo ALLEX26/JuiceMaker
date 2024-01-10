@@ -21,6 +21,9 @@
   <ItemGroup>
     <ClCompile Include="JuiceMakercpp.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="sucuri.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{C31F7A1C-E44E-4AD7-813D-C545B82BA424}</ProjectGuid>
