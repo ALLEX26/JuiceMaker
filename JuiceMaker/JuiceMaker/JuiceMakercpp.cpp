@@ -1,7 +1,32 @@
 #include <iostream>
 #include <Windows.h>
+#include<string>
 #include <list>
-ups
+
+using namespace std;
+
+class Client
+{
+public:
+	string nume;
+	string parola;
+	string mail;
+	Client(string _nume, string _parola, string _mail)
+	{
+		this->nume = _nume;
+		this->parola = _parola;
+		this->mail = _mail;
+	}
+};
+void DefinireUtilizator(list<Client*>&c)
+{
+	string nume, gmail, parola;
+	cout << "Intruduceti numele dumnevoastra: "; cin >> nume;
+	cout << "Introduceti adresa dumneavoastra de mail:"; cin >> gmail;
+	cout << "Introduceti parola personala: "; cin >> parola;
+	c.push_back(new Client(nume, parola, gmail));
+}
+
 class Cake
 {
 public:
@@ -324,23 +349,26 @@ void CommandPanel::showProductInCarousel()
 int main()
 {
 	CommandPanel CP = CommandPanel();
+	list <Client*>c;
 	string p;
 	int opt, n;
 	do
 	{
-	M:
-		cout << "1.Afisarea tuturor produselor pentru cumparare\n";
-		cout << "2.Selectare produs dorit nespecificand cantitatea\n";
-		cout << "3.Selectare produs dorit + cantitatea dorita\n";
-		cout << "4.Afisare produse disponibile\n";
-		cout << "5.Iesire\n";
-		cout << "Select option: ";
+		cout << "0. Iesire\n";
+		cout << "1. Inregistrare client nou\n";
+		cout << "2. Autentificare client existent\n";
+		cout << "3. Afisare sucuri disponibile\n";
+		cout << "4. Afisare sucuri existente in depozit\n";
+		cout << "5. Comanda suc\n";
+		cout << "6. Afisare istoric comenzi\n";
+		cout << "\n-------------------------------------------------\n";
+		cout << "Optiunea dumneavoastra este: ";
 		cin >> opt;
 		switch (opt)
 		{
 		case 1:
 			system("cls");
-			CP.showProducts();
+			DefinireUtilizator(c);
 			cout << "\n\n";
 			system("pause");
 			system("cls");
@@ -374,11 +402,14 @@ int main()
 			system("cls");
 			break;
 		case 5:
+			break;
+		case 6:
+			break;
+		case 0:
 			exit(0);
 		default: cout << "\nAti ales optiunea gresita!\n";
 			system("pause");
 			system("cls");
-			goto M;
 		}
 	} while (opt != 5);
 
