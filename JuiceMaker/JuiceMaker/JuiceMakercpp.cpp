@@ -1,10 +1,10 @@
-#include <iostream>
-#include <Windows.h>
+#include<iostream>
+#include<Windows.h>
 #include<string>
-#include <list>
+#include<list>
 
 using namespace std;
-
+	
 class Client
 {
 private:
@@ -37,6 +37,11 @@ public:
 		this->fruct = _fructe;
 		this->zahar = _zahar;
 	}
+
+	string get_nume()	
+	{
+		return this->nume;
+	}
 };
 
 class Depozit
@@ -50,6 +55,25 @@ public:
 		this->capacitate = capacitate;
 	}
 };
+
+void getSuc()
+{
+	list<Sucuri*>sucuri;
+	string nume;
+	cout << "Dati numele sucului pe care il doriti: "; cin >> nume;
+	for (auto s : sucuri)
+	{
+		if (s->get_nume() == nume)
+		{
+			cout << "Sucul dumneavoastra este servit imediat --> " << nume;
+		}
+		else
+		{
+			cout << "Sucul dumnevoastra se prepara asteptati 10 secunde";
+			sucMaker();
+		}
+	}
+}
 
 
 void DefinireUtilizator(list<Client*>&c)
@@ -89,7 +113,6 @@ int main()
 			system("cls");
 			break;
 		case 2:
-
 			break;
 		case 3:
 
