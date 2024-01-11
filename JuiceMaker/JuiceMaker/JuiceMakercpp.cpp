@@ -1,7 +1,9 @@
-#include <iostream>
+﻿#include <iostream>
 #include <Windows.h>
 #include<string>
 #include <list>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -22,6 +24,7 @@ public:
 	{
 		return this->nume;
 	}
+
 };
 
 class Sucuri
@@ -37,6 +40,13 @@ public:
 		this->fruct = _fructe;
 		this->zahar = _zahar;
 	}
+	string getNume() const {
+		return nume;
+	}
+	void afiseazaDetalii() const
+	{
+		cout << "Nume: " << nume << ", Fruct: " << fruct << ", Zahar: " << (zahar ? "Da" : "Nu") << endl;
+	}
 };
 
 class Depozit
@@ -49,6 +59,7 @@ public:
 	{
 		this->capacitate = capacitate;
 	}
+
 };
 
 
@@ -61,11 +72,106 @@ void DefinireUtilizator(list<Client*>&c)
 	c.push_back(new Client(nume, parola, gmail));
 }
 
+void afiseazaSucuriDinFisier(const string& numeFisier) {
+	ifstream fisier(numeFisier);
+	string linie;
+
+	while (getline(fisier, linie)) {
+		stringstream ss(linie);
+		string nume, fruct, strZahar;
+		bool zahar;
+
+		getline(ss, nume, ',');
+		getline(ss, fruct, ',');
+		getline(ss, strZahar, ',');
+
+		zahar = (strZahar == "true");
+
+		Sucuri suc(nume, fruct, zahar);
+		suc.afiseazaDetalii();
+	}
+
+	fisier.close();
+}void citesteSucuriDinFisier(const string& numeFisier, list<Sucuri*>& listaSucuri) {
+	ifstream fisier(numeFisier);
+	string linie;
+	while (getline(fisier, linie)) {
+		stringstream ss(linie);
+		string nume, fruct, strZahar;
+		bool zahar;
+
+		getline(ss, nume, ',');
+		getline(ss, fruct, ',');
+		getline(ss, strZahar, ',');
+
+		zahar = (strZahar == "true");
+
+		// Verifică dacă sucul deja există în listă înainte de a-l adăuga
+		bool existaDeja = false;
+		for (auto& suc : listaSucuri) {
+			if (suc->getNume() == nume) {
+				existaDeja = true;
+				break;
+			}
+		}
+		if (!existaDeja) {
+			listaSucuri.push_back(new Sucuri(nume, fruct, zahar));
+		}
+	}
+
+	fisier.close();
+}
+
+
+
+void afiseazaSucurile(const list<Sucuri*>& listaSucuri) {
+	for (const auto& suc : listaSucuri) {
+		suc->afiseazaDetalii();
+	}
+}
+
+void stergeSucDupaNume(list<Sucuri*>& listaSucuri, const string& numeSuc, unique_ptr<Sucuri>& ultimulSucSters) {
+	bool sucGasit = false;
+	for (auto it = listaSucuri.begin(); it != listaSucuri.end(); ) {
+		if ((*it)->getNume() == numeSuc) {
+			ultimulSucSters = make_unique<Sucuri>(**it);
+			delete *it;
+			it = listaSucuri.erase(it);
+			sucGasit = true;
+			cout << "Sucul " << numeSuc << " a fost sters." << endl;
+			break;
+		}
+		else {
+			++it;
+		}
+	}
+
+	if (!sucGasit) {
+		cout << "Sucul " << numeSuc << " nu a fost gasit in lista." << endl;
+	}
+
+	if (listaSucuri.empty()) {
+		cout << "Toate sucurile au fost epuizate. Vom adauga inapoi ultimul suc sters." << endl;
+		if (ultimulSucSters != nullptr) {
+			listaSucuri.push_back(new Sucuri(*ultimulSucSters));
+		}
+	}
+}
+
+
+
+
+
+
 
 int main()
-{
+{	
+	list <Sucuri*>s; 
 	list <Client*>c;
-	string p;
+	
+	unique_ptr<Sucuri> ultimulSucSters;
+	citesteSucuriDinFisier("sucuri.txt", s);
+	string p, nume_suc;
 	int opt, n;
 	do
 	{
@@ -93,11 +199,19 @@ int main()
 			break;
 		case 3:
 
-			break;
+			
+			
+			afiseazaSucurile(s);
+			
+				break; 
 		case 4:
 
+			afiseazaSucuriDinFisier("sucuri.txt");
 			break;
 		case 5:
+			cout << "introduceti sucul dorit" << endl;
+			cin >> nume_suc;
+			stergeSucDupaNume(s, nume_suc, ultimulSucSters);
 			break;
 		case 6:
 			break;
@@ -108,5 +222,7 @@ int main()
 			system("cls");
 		}
 	} while (opt != 0);
-
+	for (auto suc : s) {
+		delete suc;
+	}
 }
