@@ -1,385 +1,228 @@
-#include <iostream>
+﻿﻿#include <iostream>
 #include <Windows.h>
+#include<string>
 #include <list>
+#include <fstream>
+#include <sstream>
+
 using namespace std;
-class Cake
-{
-public:
-	Cake();
-	Cake(string n);
-	string getName();
-private:
-	string name;
-};
-Cake::Cake()
-{
-	name = "name";
-}
-Cake::Cake(string n)
-{
-	this->name = n;
-}
-string Cake::getName()
-{
-	return this->name;
-}
-class RecipeCake
-{
-public:
-	RecipeCake();
-	RecipeCake(string name, int time);
-	string getName();
-	int getTime();
-private:
-	string name;
-	int time;
-};
-RecipeCake::RecipeCake()
-{
-	name = "n/a";
-	time = 1;
-}
 
-RecipeCake::RecipeCake(string n, int t)
+class Client
 {
-	this->name = n;
-	this->time = t;
-}
-string RecipeCake::getName()
-{
-	return this->name;
-}
-int RecipeCake::getTime()
-{
-	return this->time;
-}
-class CakeMaker
-{
-public:
-	CakeMaker();
-	Cake takeCommand(RecipeCake recipe);
 private:
-};
-CakeMaker::CakeMaker()
-{}
-
-Cake CakeMaker::takeCommand(RecipeCake recipe)
-{
-	string name = recipe.getName();
-	int time = recipe.getTime();
-	Cake alt = Cake(name);
-	cout << "\nPrajitura se pregateste, asteptati 5 secunde!\n";
-	for (int i = 5; i >= 1; i--)
+	string nume;
+	string parola;
+	string mail;
+public:
+	Client(string _nume, string _parola, string _mail)
 	{
-		Sleep(1000);
-		cout << "Au ramas " << i << " secunde\n";
+		this->nume = _nume;
+		this->parola = _parola;
+		this->mail = _mail;
 	}
-	cout << "\nPrajitura este gata!\n\n";
-	Sleep(100);
-	return alt;
-}
-class CarouselOfCakes
-{
-public:
-	CarouselOfCakes();
-	bool addCake(Cake cn);
-	Cake getCake(string cn);
-	int getCurentCapacity();
-	void getCakesFromCarousel();
-private:
-	Cake* storage[10];
-	unsigned int maxCapacity = 10;
-	unsigned int lowLimit = 3;
+	string get_nume()
+	{
+		return this->nume;
+	}
 
 };
-CarouselOfCakes::CarouselOfCakes()
+
+class Sucuri
 {
-	for (int i = 0; i < maxCapacity; i++)
+private:
+	string nume;
+	string fruct;
+	bool zahar;
+public:
+	Sucuri(string _nume, string _fructe, bool _zahar)
 	{
-		storage[i] = nullptr;
+		this->nume = _nume;
+		this->fruct = _fructe;
+		this->zahar = _zahar;
 	}
+	string getNume() const {
+		return nume;
+	}
+	void afiseazaDetalii() const
+	{
+		cout << "Nume: " << nume << ", Fruct: " << fruct << ", Zahar: " << (zahar ? "Da" : "Nu") << endl;
+	}
+};
+
+class Depozit
+{
+private:
+	list<Sucuri*>s;
+	int capacitate;
+public:
+	Depozit(int capacitate, list<Sucuri*>s)
+	{
+		this->capacitate = capacitate;
+	}
+
+};
+
+
+void DefinireUtilizator(list<Client*>&c)
+{
+	string nume, gmail, parola;
+	cout << "Intruduceti numele dumnevoastra: "; cin >> nume;
+	cout << "Introduceti adresa dumneavoastra de mail:"; cin >> gmail;
+	cout << "Introduceti parola personala: "; cin >> parola;
+	c.push_back(new Client(nume, parola, gmail));
 }
 
-bool CarouselOfCakes::addCake(Cake n)
-{
-	for (int b = 0; b < maxCapacity; b++)
-	{
-		if (storage[b] != nullptr)
-		{
+void afiseazaSucuriDinFisier(const string& numeFisier) {
+	ifstream fisier(numeFisier);
+	string linie;
 
-		}
-		else
-		{
-			storage[b] = new Cake(n.getName());
-			return 1;
-		}
+	while (getline(fisier, linie)) {
+		stringstream ss(linie);
+		string nume, fruct, strZahar;
+		bool zahar;
+
+		getline(ss, nume, ',');
+		getline(ss, fruct, ',');
+		getline(ss, strZahar, ',');
+
+		zahar = (strZahar == "true");
+
+		Sucuri suc(nume, fruct, zahar);
+		suc.afiseazaDetalii();
 	}
-	return 0;
-}
 
-Cake CarouselOfCakes::getCake(string cn)
-{
-	for (int i = 0; i < maxCapacity; i++)
-	{
-		if (storage[i] != nullptr)
-		{
-			if ((*storage[i]).getName().compare(cn) != 1)
-			{
-				Cake tkc = *storage[i];
-				delete storage[i];
-				storage[i] = nullptr;
-				return tkc;
+	fisier.close();
+}void citesteSucuriDinFisier(const string& numeFisier, list<Sucuri*>& listaSucuri) {
+	ifstream fisier(numeFisier);
+	string linie;
+	while (getline(fisier, linie)) {
+		stringstream ss(linie);
+		string nume, fruct, strZahar;
+		bool zahar;
+
+		getline(ss, nume, ',');
+		getline(ss, fruct, ',');
+		getline(ss, strZahar, ',');
+
+		zahar = (strZahar == "true");
+
+		// Verifică dacă sucul deja există în listă înainte de a-l adăuga
+		bool existaDeja = false;
+		for (auto& suc : listaSucuri) {
+			if (suc->getNume() == nume) {
+				existaDeja = true;
+				break;
 			}
 		}
-	}
-	return Cake("");
-}
-
-int CarouselOfCakes::getCurentCapacity()
-{
-	unsigned int size = 0;
-	for (int h = 0; h < maxCapacity; h++)
-	{
-		if (storage[h] != nullptr)
-		{
-			size++;
+		if (!existaDeja) {
+			listaSucuri.push_back(new Sucuri(nume, fruct, zahar));
 		}
 	}
-	return size;
+
+	fisier.close();
 }
 
-void CarouselOfCakes::getCakesFromCarousel()
-{
-	unsigned int i = 0;
-	for (i = 0; i < getCurentCapacity(); i++)
-		cout << storage[i]->getName() << " ";
-	cout << '\n';
-}
-class CommandTaker
-{
-public:
-	CommandTaker();
-	CommandTaker(RecipeCake recipe);
-	Cake takeCommand(RecipeCake recipe);
-	Cake* takeCommand(RecipeCake recipe, int nrC);
-	Cake takeCommand(string noc);
-	void getCakesFromCarousel();
-	bool checkCarouselOfCakes();
-	bool refillCarousel();
 
-private:
-	RecipeCake carouselRecipe;
-	CakeMaker cakeMaker;
-	CarouselOfCakes carousel;
-};
-CommandTaker::CommandTaker()
-{
-}
-CommandTaker::CommandTaker(RecipeCake recipe)
-{
-	carouselRecipe = recipe;
-}
-Cake CommandTaker::takeCommand(RecipeCake recipe)
-{
-	Cake ct = carousel.getCake(recipe.getName());
-	if (ct.getName() != "")
-		return ct;
-	else
-		ct = cakeMaker.takeCommand(recipe);
-	return ct;
-}
 
-Cake* CommandTaker::takeCommand(RecipeCake recipe, int nrC)
-{
-	int i = 0;
-	Cake r[20];
-
-	while (nrC)
-	{
-		cout << "Pregatim prajitura: " << recipe.getName() << " cu numarul -> " << i + 1 << ".\n";
-		cout << "Prajituri ramase -> " << nrC - 1 << "\n";
-		r[i] = cakeMaker.takeCommand(recipe);
-		nrC--;
-		i++;
+void afiseazaSucurile(const list<Sucuri*>& listaSucuri) {
+	for (const auto& suc : listaSucuri) {
+		suc->afiseazaDetalii();
 	}
-	return r;
 }
 
-Cake CommandTaker::takeCommand(string noc)
-{
-	RecipeCake rc = RecipeCake(noc, 5);
-	Cake a = carousel.getCake(rc.getName());
-	if (a.getName() != "")
-		return a;
-	else
-		a = cakeMaker.takeCommand(rc);
-	return a;
-}
-
-void CommandTaker::getCakesFromCarousel()//  ???
-{
-	carousel.getCakesFromCarousel();
-}
-
-bool CommandTaker::checkCarouselOfCakes()
-{
-	if (carousel.getCurentCapacity() < 3)
-	{
-		return 0;
-	}
-	return 1;
-}
-
-bool CommandTaker::refillCarousel()
-{
-	int size = carousel.getCurentCapacity();
-	bool check;
-	Cake cn = Cake(carouselRecipe.getName());
-	while (size < 10)
-	{
-		check = carousel.addCake(cn);
-		size++;
-	}
-
-	return check;
-}
-class CommandPanel
-{
-public:
-	CommandPanel();
-	void showProducts();
-	void selectProduct(string p);
-	void selectProduct(string p, int nrp);
-	void showProductInCarousel();
-private:
-	list<RecipeCake> menu;
-	CommandTaker commandTaker;
-
-};
-CommandPanel::CommandPanel()
-{
-	RecipeCake c0 = RecipeCake("Amandina", 5);
-	RecipeCake c1 = RecipeCake("Cheesecake", 5);
-	RecipeCake c2 = RecipeCake("Ecler", 5);
-	RecipeCake c3 = RecipeCake("Savarina", 5);
-	menu.push_back(c0);
-	menu.push_back(c1);
-	menu.push_back(c2);
-	menu.push_back(c3);
-
-	if (commandTaker.checkCarouselOfCakes() == 0)
-		commandTaker.refillCarousel();
-}
-
-void CommandPanel::showProducts()
-{
-	list<RecipeCake>::iterator rc;
-	for (rc = menu.begin(); rc != menu.end(); ++rc)
-		cout << rc->getName() << "\n";
-}
-
-void CommandPanel::selectProduct(string p)
-{
-	bool ok = 0;
-	list<RecipeCake>::iterator rc;
-	for (rc = menu.begin(); rc != menu.end(); rc++)
-		if (rc->getName() == p)
-			ok = 1;
-	if (ok == 0)
-		cout << "\nNe pare rau, aceasta prajitura nu face parte din meniul nostru!\n";
-	else
-		commandTaker.takeCommand(p);
-}
-
-void CommandPanel::selectProduct(string p, int nrp)
-{
-	bool ok = 0;
-	list<RecipeCake>::iterator rc;
-	for (rc = menu.begin(); rc != menu.end(); rc++)
-		if (rc->getName() == p)
-		{
-			ok = 1;
+void stergeSucDupaNume(list<Sucuri*>& listaSucuri, const string& numeSuc, unique_ptr<Sucuri>& ultimulSucSters) {
+	bool sucGasit = false;
+	for (auto it = listaSucuri.begin(); it != listaSucuri.end(); ) {
+		if ((*it)->getNume() == numeSuc) {
+			ultimulSucSters = make_unique<Sucuri>(**it);
+			delete *it;
+			it = listaSucuri.erase(it);
+			sucGasit = true;
+			cout << "Sucul " << numeSuc << " a fost sters." << endl;
+			break;
 		}
-
-	if (ok == 0)
-	{
-		cout << "Ne pare rau, aceasta prajitura nu face parte din meniul nostru!\n";
+		else {
+			++it;
+		}
 	}
 
-	else if (1 <= nrp && nrp <= 20)
-	{
-
-		RecipeCake rc = RecipeCake(p, 5);
-		commandTaker.takeCommand(rc, nrp);
+	if (!sucGasit) {
+		cout << "Sucul " << numeSuc << " nu a fost gasit in lista." << endl;
 	}
-	else
-		cout << "Ne pare rau, aparatul poate produce doar 20 de bucati.\n";
+
+	if (listaSucuri.empty()) {
+		cout << "Toate sucurile au fost epuizate. Vom adauga inapoi ultimul suc sters." << endl;
+		if (ultimulSucSters != nullptr) {
+			listaSucuri.push_back(new Sucuri(*ultimulSucSters));
+		}
+	}
 }
 
-void CommandPanel::showProductInCarousel()
-{
-	commandTaker.getCakesFromCarousel();
-}
+
+
+
+
+
 
 int main()
 {
-	CommandPanel CP = CommandPanel();
-	string p;
+	list <Sucuri*>s;
+	list <Client*>c;
+
+	unique_ptr<Sucuri> ultimulSucSters;
+	citesteSucuriDinFisier("sucuri.txt", s);
+	string p, nume_suc;
 	int opt, n;
 	do
 	{
-	M:
-		cout << "1.Afisarea tuturor produselor pentru cumparare\n";
-		cout << "2.Selectare produs dorit nespecificand cantitatea\n";
-		cout << "3.Selectare produs dorit + cantitatea dorita\n";
-		cout << "4.Afisare produse disponibile\n";
-		cout << "5.Iesire\n";
-		cout << "Select option: ";
+		cout << "0. Iesire\n";
+		cout << "1. Inregistrare client nou\n";
+		cout << "2. Autentificare client existent\n";
+		cout << "3. Afisare sucuri disponibile\n";
+		cout << "4. Afisare sucuri existente in depozit\n";
+		cout << "5. Comanda suc\n";
+		cout << "6. Afisare istoric comenzi\n";
+		cout << "\n-------------------------------------------------\n";
+		cout << "Optiunea dumneavoastra este: ";
 		cin >> opt;
 		switch (opt)
 		{
 		case 1:
 			system("cls");
-			CP.showProducts();
+			DefinireUtilizator(c);
 			cout << "\n\n";
 			system("pause");
 			system("cls");
 			break;
 		case 2:
-			system("cls");
-			cout << "Ce prajitura doriti sa comandati? -> ";
-			cin >> p;
-			CP.selectProduct(p);
-			cout << "\n\n";
-			system("pause");
-			system("cls");
+
 			break;
 		case 3:
-			system("cls");
-			cout << "Ce prajitura doriti sa comandati? -> ";
-			cin >> p;
-			cout << "\nCate bucati doriti sa comandati? -> ";
-			cin >> n;
-			cout << "\n";
-			CP.selectProduct(p, n);
-			cout << "\n\n";
-			system("pause");
-			system("cls");
+
+
+
+			afiseazaSucurile(s);
+
 			break;
 		case 4:
-			system("cls");
-			CP.showProductInCarousel();
-			cout << "In acest moment nu sunt produse disponibile insa daca alegeti un produs din meniul nostru, el va fi gata in doar 5 secunde! \n\n";
-			system("pause");
-			system("cls");
+
+			afiseazaSucuriDinFisier("sucuri.txt");
 			break;
 		case 5:
+			cout << "introduceti sucul dorit" << endl;
+			cin >> nume_suc;
+			stergeSucDupaNume(s, nume_suc, ultimulSucSters);
+			break;
+		case 6:
+			break;
+		case 0:
 			exit(0);
 		default: cout << "\nAti ales optiunea gresita!\n";
 			system("pause");
 			system("cls");
-			goto M;
 		}
-	} while (opt != 5);
-
+	} while (opt != 0);
+	for (auto suc : s) {
+		delete suc;
+	}
 }
