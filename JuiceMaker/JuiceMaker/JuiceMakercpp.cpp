@@ -92,7 +92,8 @@ void afiseazaSucuriDinFisier(const string& numeFisier) {
 	}
 
 	fisier.close();
-}void citesteSucuriDinFisier(const string& numeFisier, list<Sucuri*>& listaSucuri) {
+}
+void citesteSucuriDinFisier(const string& numeFisier, list<Sucuri*>& listaSucuri) {
 	ifstream fisier(numeFisier);
 	string linie;
 	while (getline(fisier, linie)) {
